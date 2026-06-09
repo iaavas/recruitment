@@ -14,7 +14,7 @@ user_roles = Table(
     "user_roles", Base.metadata,
     Column("user_id",    String, ForeignKey("users.id",    ondelete="CASCADE"), primary_key=True),
     Column("role_id",    String, ForeignKey("roles.id",    ondelete="CASCADE"), primary_key=True),
-    Column("assigned_at", DateTime, default=datetime.utcnow),
+    Column("assigned_at", DateTime, default=datetime.now(timezone.utc)),
 )
 
 role_permissions = Table(

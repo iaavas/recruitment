@@ -15,6 +15,10 @@ interface ScoreCreatePayload {
   note?: string;
 }
 
+function statusClass(status: string) {
+  return `status-pill status-${status.toLowerCase()}`;
+}
+
 function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -24,7 +28,7 @@ function CandidateDetailPage() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryError, setSummaryError] = useState("");
 
-  const [scoreCategory, setScoreCategory] = useState("Technical");
+  const [scoreCategory, setScoreCategory] = useState("Technical Skill");
   const [scoreValue, setScoreValue] = useState(3);
   const [scoreNote, setScoreNote] = useState("");
   const [scoreLoading, setScoreLoading] = useState(false);
@@ -84,17 +88,29 @@ function CandidateDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <p className="muted">Loading details...</p>;
+    return (
+      <div className="page-shell">
+        <p className="muted" style={{ textAlign: "center", padding: "4rem" }}>Loading candidate profile details...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <section className="surface-card detail-panel">
-        <p className="form-error">{error}</p>
-        <Link to="/candidates" className="button button-secondary inline-link">
-          Back to candidates
-        </Link>
-      </section>
+      <div className="page-shell">
+        <section className="surface-card detail-card" style={{ gap: "1.5rem", padding: "3rem", textAlign: "center" }}>
+          <div className="form-error" style={{ display: "inline-block" }}>{error}</div>
+          <div>
+            <Link to="/candidates" className="button button-secondary inline-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "0.5rem" }}>
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back to candidates list
+            </Link>
+          </div>
+        </section>
+      </div>
     );
   }
 
@@ -152,7 +168,7 @@ function CandidateDetailPage() {
       const { data } = await api.get<CandidateOut>(`/candidates/${id}`);
       setCandidate(data);
       setScoreNote("");
-      setScoreSuccess("Score submitted.");
+      setScoreSuccess("Evaluation score submitted successfully.");
     } catch (err) {
       const apiError = err as AxiosError<ErrorPayload>;
       setScoreError(
@@ -183,7 +199,7 @@ function CandidateDetailPage() {
             }
           : prev,
       );
-      setNotesSuccess("Internal notes updated.");
+      setNotesSuccess("Internal notes updated successfully.");
     } catch (err) {
       const apiError = err as AxiosError<ErrorPayload>;
       setNotesError(
@@ -196,150 +212,278 @@ function CandidateDetailPage() {
 
   return (
     <section className="detail-panel reveal-up">
-      <Link to="/candidates" className="button button-secondary inline-link">
-        Back to candidates
-      </Link>
+      <div style={{ marginBottom: "0.5rem" }}>
+        <Link to="/candidates" className="button button-secondary inline-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "0.5rem" }}>
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to pipeline
+        </Link>
+      </div>
 
-      <article className="surface-card detail-card">
-        <p className="eyebrow">Candidate profile</p>
-        <h1>{candidate.name}</h1>
-        <p className="muted">{candidate.email}</p>
-
-        <div className="detail-grid">
-          <div>
-            <h4>Role applied</h4>
-            <p>{candidate.role_applied}</p>
-          </div>
-          <div>
-            <h4>Status</h4>
-            <p>{candidate.status}</p>
-          </div>
-          <div>
-            <h4>Skills</h4>
-            <div className="skill-row">
-              {(candidate.skills || []).map((skill) => (
-                <span key={skill} className="chip">
-                  {skill}
-                </span>
-              ))}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 7fr) minmax(0, 5fr)", gap: "1.5rem" }} className="responsive-detail-layout">
+        {/* Left Column: Profile, Summary, Internal Notes */}
+        <div style={{ display: "grid", gap: "1.5rem", contentVisibility: "auto" }}>
+          
+          <article className="surface-card detail-card" style={{ borderRadius: "16px" }}>
+            <div>
+              <p className="eyebrow" style={{ marginBottom: "0.25rem" }}>Candidate Profile</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+                <h1 style={{ fontSize: "2.25rem" }}>{candidate.name}</h1>
+                <span className={statusClass(candidate.status)}>{candidate.status}</span>
+              </div>
+              <p className="muted" style={{ marginTop: "0.25rem", fontWeight: 500 }}>{candidate.email}</p>
             </div>
-          </div>
+
+            <div className="detail-grid" style={{ borderTop: "1px solid var(--slate-100)", paddingTop: "1.5rem", marginTop: "0.5rem" }}>
+              <div className="detail-grid-item">
+                <h4>Role Applied For</h4>
+                <p style={{ fontWeight: 600, color: "var(--slate-900)" }}>{candidate.role_applied}</p>
+              </div>
+              <div className="detail-grid-item">
+                <h4>Skills & Keywords</h4>
+                <div className="skill-row" style={{ marginTop: "0.25rem" }}>
+                  {(candidate.skills || []).length > 0 ? (
+                    candidate.skills.map((skill) => (
+                      <span key={skill} className="chip">
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="muted" style={{ fontSize: "0.85rem" }}>None specified</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article className="surface-card detail-card" style={{ borderRadius: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              <h3 style={{ margin: 0 }}>AI Profile Summary</h3>
+            </div>
+            
+            <div style={{ 
+              backgroundColor: "var(--slate-50)", 
+              padding: "1.25rem", 
+              borderRadius: "var(--radius-md)", 
+              border: "1px dashed var(--slate-200)",
+              minHeight: "80px",
+              lineHeight: 1.6,
+              fontSize: "0.95rem",
+              color: candidate.ai_summary ? "var(--slate-800)" : "var(--slate-400)"
+            }}>
+              {candidate.ai_summary || "No automated summary has been generated for this applicant yet."}
+            </div>
+
+            {summaryError ? <p className="form-error">{summaryError}</p> : null}
+            
+            <div>
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={onTriggerSummary}
+                disabled={summaryLoading}
+                style={{ width: "100%" }}
+              >
+                {summaryLoading ? (
+                  <>
+                    <svg className="spinner" width="16" height="16" viewBox="0 0 50 50" style={{ animation: "spin 1s linear infinite", marginRight: "0.5rem" }}>
+                      <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" strokeWidth="5"></circle>
+                    </svg>
+                    Analyzing application...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "0.5rem" }}>
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Generate AI Summary
+                  </>
+                )}
+              </button>
+            </div>
+          </article>
+
+          {canWriteNotes ? (
+            <article className="surface-card detail-card" style={{ borderRadius: "16px", borderLeft: "4px solid var(--brand-600)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <h3 style={{ margin: 0 }}>Internal Team Notes <span style={{ fontSize: "0.75rem", verticalAlign: "middle", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "var(--brand-light)", color: "var(--brand-700)", marginLeft: "0.5rem" }}>Admin Only</span></h3>
+              </div>
+              
+              <form className="form-grid" onSubmit={onSaveNotes}>
+                <textarea
+                  id="internal-notes"
+                  className="input textarea"
+                  value={notesValue}
+                  onChange={(e) => setNotesValue(e.target.value)}
+                  placeholder="Record private evaluation details, background checks, or scheduling availability. Visible only to authorized recruiters."
+                  rows={5}
+                />
+
+                {notesError ? <p className="form-error">{notesError}</p> : null}
+                {notesSuccess ? (
+                  <div style={{
+                    color: "var(--success-700)",
+                    backgroundColor: "var(--success-light)",
+                    padding: "0.6rem 0.8rem",
+                    borderRadius: "var(--radius-md)",
+                    fontSize: "0.85rem",
+                    fontWeight: 500,
+                    borderLeft: "3px solid var(--success-600)"
+                  }}>
+                    {notesSuccess}
+                  </div>
+                ) : null}
+
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    className="button button-primary"
+                    type="submit"
+                    disabled={notesLoading}
+                  >
+                    {notesLoading ? "Saving notes..." : "Save internal notes"}
+                  </button>
+                </div>
+              </form>
+            </article>
+          ) : null}
         </div>
-      </article>
 
-      <article className="surface-card detail-card">
-        <h3>AI summary</h3>
-        <p>{candidate.ai_summary || "No summary generated yet."}</p>
-        {summaryError ? <p className="form-error">{summaryError}</p> : null}
-        <button
-          type="button"
-          className="button button-secondary inline-link"
-          onClick={onTriggerSummary}
-          disabled={summaryLoading}
-        >
-          {summaryLoading ? "Generating summary..." : "Generate summary"}
-        </button>
-      </article>
+        {/* Right Column: Scorecards & Evaluations Form */}
+        <div style={{ display: "grid", gap: "1.5rem", contentVisibility: "auto" }}>
+          
+          <article className="surface-card detail-card" style={{ borderRadius: "16px" }}>
+            <h3>Evaluation Scorecard</h3>
+            
+            {candidate.scores?.length ? (
+              <ul className="score-list">
+                {candidate.scores.map((score) => (
+                  <li key={score.id}>
+                    <div className="score-category-note">
+                      <strong>{score.category}</strong>
+                      <p className="muted small" style={{ margin: 0 }}>
+                        {score.note || "No review note provided."}
+                      </p>
+                    </div>
+                    <div className="score-badge">
+                      {score.score}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div style={{ textAlign: "center", padding: "1.5rem", border: "1px dashed var(--slate-200)", borderRadius: "var(--radius-md)", backgroundColor: "var(--slate-50)" }}>
+                <p className="muted small" style={{ margin: 0 }}>No scorecards recorded for this applicant yet.</p>
+              </div>
+            )}
 
-      <article className="surface-card detail-card">
-        <h3>Scores</h3>
-        {candidate.scores?.length ? (
-          <ul className="score-list">
-            {candidate.scores.map((score) => (
-              <li key={score.id}>
-                <strong>{score.category}</strong>
-                <span>{score.score}/5</span>
-                <p className="muted">{score.note || "No note"}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="muted">No scores visible for your role.</p>
-        )}
+            <form className="form-grid" onSubmit={onSubmitScore} style={{ borderTop: "1px solid var(--slate-100)", paddingTop: "1.5rem", marginTop: "0.5rem" }}>
+              <h4 style={{ color: "var(--slate-900)" }}>Record Evaluation</h4>
 
-        <form className="form-grid" onSubmit={onSubmitScore}>
-          <h4>Add score</h4>
+              <label className="field-label" htmlFor="score-category">
+                Evaluation Category
+              </label>
+              <select
+                id="score-category"
+                className="input"
+                value={scoreCategory}
+                onChange={(e) => setScoreCategory(e.target.value)}
+                required
+                style={{ height: "38px" }}
+              >
+                <option value="Technical Skill">Technical Skill</option>
+                <option value="Communication">Communication</option>
+                <option value="Problem Solving">Problem Solving</option>
+                <option value="Cultural Fit">Cultural Fit</option>
+                <option value="Experience & Background">Experience & Background</option>
+              </select>
 
-          <label className="field-label" htmlFor="score-category">
-            Category
-          </label>
-          <input
-            id="score-category"
-            className="input"
-            value={scoreCategory}
-            onChange={(e) => setScoreCategory(e.target.value)}
-            placeholder="Technical, communication, etc"
-            required
-          />
+              <label className="field-label" htmlFor="score-value">
+                Score (1 = Poor, 5 = Excellent)
+              </label>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <button
+                    key={num}
+                    type="button"
+                    onClick={() => setScoreValue(num)}
+                    style={{
+                      flex: 1,
+                      height: "38px",
+                      borderRadius: "var(--radius-md)",
+                      border: scoreValue === num ? "1px solid var(--brand-600)" : "1px solid var(--slate-200)",
+                      backgroundColor: scoreValue === num ? "var(--brand-light)" : "#ffffff",
+                      color: scoreValue === num ? "var(--brand-700)" : "var(--slate-700)",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      outline: "none"
+                    }}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
 
-          <label className="field-label" htmlFor="score-value">
-            Score (1-5)
-          </label>
-          <input
-            id="score-value"
-            className="input"
-            type="number"
-            min={1}
-            max={5}
-            value={scoreValue}
-            onChange={(e) => setScoreValue(Number(e.target.value))}
-            required
-          />
+              <label className="field-label" htmlFor="score-note">
+                Evaluation Note
+              </label>
+              <textarea
+                id="score-note"
+                className="input textarea"
+                value={scoreNote}
+                onChange={(e) => setScoreNote(e.target.value)}
+                placeholder="Details of performance, reasoning for score, etc."
+                rows={3}
+              />
 
-          <label className="field-label" htmlFor="score-note">
-            Note
-          </label>
-          <textarea
-            id="score-note"
-            className="input textarea"
-            value={scoreNote}
-            onChange={(e) => setScoreNote(e.target.value)}
-            placeholder="Optional context for this score"
-            rows={3}
-          />
+              {scoreError ? <p className="form-error">{scoreError}</p> : null}
+              {scoreSuccess ? (
+                <div style={{
+                  color: "var(--success-700)",
+                  backgroundColor: "var(--success-light)",
+                  padding: "0.6rem 0.8rem",
+                  borderRadius: "var(--radius-md)",
+                  fontSize: "0.85rem",
+                  fontWeight: 500,
+                  borderLeft: "3px solid var(--success-600)"
+                }}>
+                  {scoreSuccess}
+                </div>
+              ) : null}
 
-          {scoreError ? <p className="form-error">{scoreError}</p> : null}
-          {scoreSuccess ? <p className="muted">{scoreSuccess}</p> : null}
+              <button
+                className="button button-primary"
+                type="submit"
+                disabled={scoreLoading}
+                style={{ width: "100%" }}
+              >
+                {scoreLoading ? "Saving score..." : "Submit evaluation"}
+              </button>
+            </form>
+          </article>
+        </div>
+      </div>
 
-          <button
-            className="button button-primary"
-            type="submit"
-            disabled={scoreLoading}
-          >
-            {scoreLoading ? "Saving score..." : "Submit score"}
-          </button>
-        </form>
-      </article>
-
-      {canWriteNotes ? (
-        <article className="surface-card detail-card">
-          <h3>Internal notes (Admin)</h3>
-          <form className="form-grid" onSubmit={onSaveNotes}>
-            <label className="field-label" htmlFor="internal-notes">
-              Team-only notes
-            </label>
-            <textarea
-              id="internal-notes"
-              className="input textarea"
-              value={notesValue}
-              onChange={(e) => setNotesValue(e.target.value)}
-              rows={5}
-              placeholder="Visible only to authorized staff"
-            />
-
-            {notesError ? <p className="form-error">{notesError}</p> : null}
-            {notesSuccess ? <p className="muted">{notesSuccess}</p> : null}
-
-            <button
-              className="button button-primary"
-              type="submit"
-              disabled={notesLoading}
-            >
-              {notesLoading ? "Saving notes..." : "Save notes"}
-            </button>
-          </form>
-        </article>
-      ) : null}
+      {/* Style overrides for details split layout */}
+      <style>{`
+        @media (max-width: 900px) {
+          .responsive-detail-layout {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </section>
   );
 }

@@ -17,6 +17,7 @@ function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -42,15 +43,17 @@ function LoginPage() {
   return (
     <div className="page-shell center-panel">
       <section className="auth-card surface-card reveal-up">
-        <p className="eyebrow">Welcome back</p>
-        <h1>Sign in to TechKraft ATS</h1>
-        <p className="muted">
-          Secure, role-aware candidate workflows for your hiring team.
-        </p>
+        <div>
+          <p className="eyebrow">Welcome back</p>
+          <h1 style={{ marginTop: "0.25rem", marginBottom: "0.5rem" }}>Sign in</h1>
+          <p className="muted">
+            Access secure, role-aware workflows for your hiring team.
+          </p>
+        </div>
 
         <form className="form-grid" onSubmit={onSubmit}>
           <label className="field-label" htmlFor="email">
-            Email
+            Email address
           </label>
           <input
             id="email"
@@ -60,20 +63,64 @@ function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
             required
+            autoComplete="username"
           />
 
           <label className="field-label" htmlFor="password">
             Password
           </label>
-          <input
-            id="password"
-            className="input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            required
-          />
+          <div className="password-input-wrapper">
+            <input
+              id="password"
+              className="input"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
 
           {error ? <p className="form-error">{error}</p> : null}
 
@@ -81,17 +128,20 @@ function LoginPage() {
             className="button button-primary"
             type="submit"
             disabled={submitting}
+            style={{ marginTop: "0.5rem" }}
           >
             {submitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
-        <p className="muted small">
-          New reviewer? <Link to="/register">Create an account</Link>
-        </p>
-        <p className="muted small">
-          Applying as a candidate? <Link to="/apply">Submit application</Link>
-        </p>
+        <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem", borderTop: "1px solid var(--slate-100)", paddingTop: "1rem" }}>
+          <p className="muted small">
+            New reviewer? <Link to="/register">Create reviewer account</Link>
+          </p>
+          <p className="muted small">
+            Applying as a candidate? <Link to="/apply">Submit application</Link>
+          </p>
+        </div>
       </section>
     </div>
   );
