@@ -1,4 +1,5 @@
 import json
+import asyncio
 from datetime import datetime,timezone
 from typing import AsyncGenerator
 
@@ -197,6 +198,8 @@ async def generate_ai_summary(candidate_id: str, db: Session):
 		).first()
 		if not candidate:
 			return None
+
+		await asyncio.sleep(2)
 
 		skills = json.loads(candidate.skills or "[]")
 		avg_score = None
