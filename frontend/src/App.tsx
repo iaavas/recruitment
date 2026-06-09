@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import CandidateApplyPage from "./pages/CandidateApplyPage";
 import CandidateDetailPage from "./pages/CandidateDetailPage";
 import CandidatesListPage from "./pages/CandidatesListPage";
 import LoginPage from "./pages/LoginPage";
@@ -12,6 +13,7 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/apply" element={<CandidateApplyPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 

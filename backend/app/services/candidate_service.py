@@ -114,6 +114,40 @@ def get_candidate_out(db: Session, candidate_id: str, current_user: models.User)
 		raise HTTPException(status_code=500, detail="Failed to fetch candidate")
 
 
+def create_candidate_application(
+	db: Session,
+	apply_in: schemas.CandidateApplyIn,
+) -> schemas.CandidateApplyOut:
+	try:
+		existing = db.query(models.Candidate).filter(
+			models.Candidate.email == apply_in.email,
+			models.Candidate.deleted_at == None,
+		).first()
+		if existing:
+			raise HTTPException(status_code=400, detail="Application already exists for this email")
+
+		candidate = models.Candidate(
+			name=apply_in.name,
+			email=apply_in.email,
+			role_applied=apply_in.role_applied,
+			skills=json.dumps(apply_in.skills or []),
+			status="new",
+		)
+		db.add(candidate)
+		db.commit()
+		db.refresh(candidate)
+		return schemas.CandidateApplyOut(
+			id=candidate.id,
+			message="Application submitted successfully",
+		)
+	except HTTPException:
+		db.rollback()
+		raise
+	except SQLAlchemyError:
+		db.rollback()
+		raise HTTPException(status_code=500, detail="Failed to submit application")
+
+
 def submit_score(
 	db: Session,
 	candidate_id: str,

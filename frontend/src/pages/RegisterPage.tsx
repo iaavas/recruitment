@@ -108,6 +108,9 @@ function RegisterPage() {
         <p className="muted small">
           Already have access? <Link to="/login">Sign in</Link>
         </p>
+        <p className="muted small">
+          Applying as a candidate? <Link to="/apply">Submit application</Link>
+        </p>
       </section>
     </div>
   );

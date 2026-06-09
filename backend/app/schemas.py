@@ -50,3 +50,15 @@ class CandidateListOut(BaseModel):
     total:     int
     page:      int
     page_size: int
+
+
+class CandidateApplyIn(BaseModel):
+    name: str
+    email: EmailStr
+    role_applied: str
+    skills: List[str] = []
+
+
+class CandidateApplyOut(BaseModel):
+    id: str
+    message: str

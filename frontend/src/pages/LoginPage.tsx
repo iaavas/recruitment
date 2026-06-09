@@ -89,6 +89,9 @@ function LoginPage() {
         <p className="muted small">
           New reviewer? <Link to="/register">Create an account</Link>
         </p>
+        <p className="muted small">
+          Applying as a candidate? <Link to="/apply">Submit application</Link>
+        </p>
       </section>
     </div>
   );

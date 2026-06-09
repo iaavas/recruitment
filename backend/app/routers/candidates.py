@@ -10,6 +10,14 @@ from ..services import candidate_service
 
 router = APIRouter(prefix="/candidates", tags=["candidates"])
 
+
+@router.post("/apply", response_model=schemas.CandidateApplyOut)
+def apply_candidate(
+    apply_in: schemas.CandidateApplyIn,
+    db: Session = Depends(get_db),
+):
+    return candidate_service.create_candidate_application(db=db, apply_in=apply_in)
+
 @router.get("", response_model=schemas.CandidateListOut)
 def list_candidates(
     status:       str = None,

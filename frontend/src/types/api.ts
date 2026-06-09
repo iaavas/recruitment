@@ -34,6 +34,18 @@ export interface CandidateListOut {
   page_size: number;
 }
 
+export interface CandidateApplyRequest {
+  name: string;
+  email: string;
+  role_applied: string;
+  skills: string[];
+}
+
+export interface CandidateApplyResponse {
+  id: string;
+  message: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
