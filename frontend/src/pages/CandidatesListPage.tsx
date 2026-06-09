@@ -132,12 +132,21 @@ function CandidatesListPage() {
 
   return (
     <section className="reveal-up" style={{ display: "grid", gap: "1rem" }}>
-      <div className="panel-head surface-card" style={{ padding: "1.75rem 2rem", borderRadius: "16px" }}>
+      <div
+        className="panel-head surface-card"
+        style={{ padding: "1.75rem 2rem", borderRadius: "16px" }}
+      >
         <div>
-          <p className="eyebrow" style={{ marginBottom: "0.2rem" }}>Review Workspace</p>
+          <p className="eyebrow" style={{ marginBottom: "0.2rem" }}>
+            Review Workspace
+          </p>
           <h1 style={{ fontSize: "2rem" }}>Hiring Pipeline</h1>
-          <p className="muted" style={{ marginTop: "0.25rem", fontSize: "0.9rem" }}>
-            Track active applicants, focus scoring sessions, and move talent faster.
+          <p
+            className="muted"
+            style={{ marginTop: "0.25rem", fontSize: "0.9rem" }}
+          >
+            Track active applicants, focus scoring sessions, and move talent
+            faster.
           </p>
         </div>
         <div className="list-metrics">
@@ -146,9 +155,19 @@ function CandidatesListPage() {
         </div>
       </div>
 
-      <div className="filters-grid surface-card" style={{ padding: "1.25rem", borderRadius: "12px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-          <label className="small" style={{ fontWeight: 600, color: "var(--slate-600)" }}>Search Keyword</label>
+      <div
+        className="filters-grid surface-card"
+        style={{ padding: "1.25rem", borderRadius: "12px" }}
+      >
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
+        >
+          <label
+            className="small"
+            style={{ fontWeight: 600, color: "var(--slate-600)" }}
+          >
+            Search Keyword
+          </label>
           <input
             className="input"
             value={filters.keyword}
@@ -156,8 +175,15 @@ function CandidatesListPage() {
             placeholder="Search name, email, role..."
           />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-          <label className="small" style={{ fontWeight: 600, color: "var(--slate-600)" }}>Role Applied</label>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
+        >
+          <label
+            className="small"
+            style={{ fontWeight: 600, color: "var(--slate-600)" }}
+          >
+            Role Applied
+          </label>
           <input
             className="input"
             value={filters.role_applied}
@@ -165,8 +191,15 @@ function CandidatesListPage() {
             placeholder="e.g. Frontend"
           />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-          <label className="small" style={{ fontWeight: 600, color: "var(--slate-600)" }}>Required Skill</label>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
+        >
+          <label
+            className="small"
+            style={{ fontWeight: 600, color: "var(--slate-600)" }}
+          >
+            Required Skill
+          </label>
           <input
             className="input"
             value={filters.skill}
@@ -174,8 +207,15 @@ function CandidatesListPage() {
             placeholder="e.g. React"
           />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-          <label className="small" style={{ fontWeight: 600, color: "var(--slate-600)" }}>Status Filter</label>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}
+        >
+          <label
+            className="small"
+            style={{ fontWeight: 600, color: "var(--slate-600)" }}
+          >
+            Status Filter
+          </label>
           <select
             className="input"
             value={filters.status}
@@ -192,7 +232,10 @@ function CandidatesListPage() {
         </div>
       </div>
 
-      <div className="table-shell surface-card" style={{ borderRadius: "16px" }}>
+      <div
+        className="table-shell surface-card"
+        style={{ borderRadius: "16px" }}
+      >
         <div className="table-scroll">
           <table className="candidate-table" aria-label="Candidates list">
             <thead>
@@ -216,7 +259,11 @@ function CandidatesListPage() {
 
               {error ? (
                 <tr>
-                  <td colSpan={6} className="table-message form-error" style={{ margin: "2rem" }}>
+                  <td
+                    colSpan={6}
+                    className="table-message form-error"
+                    style={{ margin: "2rem" }}
+                  >
                     {error}
                   </td>
                 </tr>
@@ -239,15 +286,23 @@ function CandidatesListPage() {
                       </div>
                       <div className="candidate-info">
                         <strong>{candidate.name}</strong>
-                        <span className="muted" style={{ fontSize: "0.85rem" }}>{candidate.email}</span>
+                        <span className="muted" style={{ fontSize: "0.85rem" }}>
+                          {candidate.email}
+                        </span>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <span style={{ fontWeight: 500, color: "var(--slate-700)" }}>{candidate.role_applied}</span>
+                    <span
+                      style={{ fontWeight: 500, color: "var(--slate-700)" }}
+                    >
+                      {candidate.role_applied}
+                    </span>
                   </td>
                   <td>
-                    <span className={statusClass(candidate.status)}>{candidate.status}</span>
+                    <span className={statusClass(candidate.status)}>
+                      {candidate.status}
+                    </span>
                   </td>
                   <td>
                     <div className="skill-row">
@@ -257,17 +312,29 @@ function CandidatesListPage() {
                         </span>
                       ))}
                       {(candidate.skills || []).length > 3 ? (
-                        <span className="muted small" style={{ alignSelf: "center", marginLeft: "0.25rem", fontWeight: 600 }}>
+                        <span
+                          className="muted small"
+                          style={{
+                            alignSelf: "center",
+                            marginLeft: "0.25rem",
+                            fontWeight: 600,
+                          }}
+                        >
                           +{candidate.skills.length - 3} more
                         </span>
                       ) : null}
                     </div>
                   </td>
                   <td>
-                    <span className="muted" style={{ fontSize: "0.875rem" }}>{formatDate(candidate.created_at)}</span>
+                    <span className="muted" style={{ fontSize: "0.875rem" }}>
+                      {formatDate(candidate.created_at)}
+                    </span>
                   </td>
                   <td style={{ paddingRight: "2rem" }}>
-                    <Link className="table-link" to={`/candidates/${candidate.id}`}>
+                    <Link
+                      className="table-link"
+                      to={`/candidates/${candidate.id}`}
+                    >
                       View Profile
                     </Link>
                   </td>
@@ -278,21 +345,36 @@ function CandidatesListPage() {
         </div>
       </div>
 
-      <div className="pagination-row surface-card" style={{ borderRadius: "12px" }}>
+      <div
+        className="pagination-row surface-card"
+        style={{ borderRadius: "12px" }}
+      >
         <button
           type="button"
           className="button button-secondary"
           disabled={page <= 1}
           onClick={() => setPage((p) => Math.max(1, p - 1))}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "0.25rem" }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginRight: "0.25rem" }}
+          >
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
           Previous
         </button>
         <p className="muted" style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-          Showing page <span style={{ color: "var(--slate-900)" }}>{page}</span> of <span style={{ color: "var(--slate-900)" }}>{totalPages}</span>
+          Showing page <span style={{ color: "var(--slate-900)" }}>{page}</span>{" "}
+          of <span style={{ color: "var(--slate-900)" }}>{totalPages}</span>
         </p>
         <button
           type="button"
@@ -301,7 +383,18 @@ function CandidatesListPage() {
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
         >
           Next
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: "0.25rem" }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginLeft: "0.25rem" }}
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
