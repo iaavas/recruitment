@@ -103,6 +103,11 @@ p {
   border-color: var(--brand-600);
 }
 
+.textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
 .button {
   border: 1px solid transparent;
   border-radius: var(--radius-md);
