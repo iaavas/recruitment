@@ -1,0 +1,31 @@
+.DS_Store
+.idea/
+.vscode/
+
+
+# Environment files
+
+
+.env
+
+#backend (Python)
+backend/.venv/
+backend/__pycache__/
+backend/.pytest_cache/
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.nuxt/
+frontend/.svelte-kit/
+frontend/.parcel-cache/
+frontend/coverage/
+frontend/.vite/
+frontend/.cache/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
