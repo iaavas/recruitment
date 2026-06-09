@@ -1,3 +1,14 @@
+import api, {
+  clearStoredToken,
+  getStoredToken,
+  setStoredToken,
+} from "../lib/api";
+import type {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  UserOut,
+} from "../types/api";
 import {
   createContext,
   useCallback,
@@ -7,8 +18,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import api from "../lib/api";
-import type { LoginRequest, RegisterRequest, UserOut } from "../types/api";
 
 interface AuthContextValue {
   user: UserOut | null;
@@ -35,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { data } = await api.get<UserOut>("/auth/me");
       setUser(data);
     } catch {
+      clearStoredToken();
       setUser(null);
     }
   }, []);
@@ -43,12 +53,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     let mounted = true;
 
     const bootstrap = async () => {
+      if (!getStoredToken()) {
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const { data } = await api.get<UserOut>("/auth/me");
         if (mounted) {
           setUser(data);
         }
       } catch {
+        clearStoredToken();
         if (mounted) {
           setUser(null);
         }
@@ -71,9 +90,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       payload.append("username", email);
       payload.append("password", password);
 
-      await api.post("/auth/login", payload, {
+      const { data } = await api.post<LoginResponse>("/auth/login", payload, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
+      setStoredToken(data.access_token);
 
       await refreshUser();
     },
@@ -94,6 +114,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch {
       // Keep UI consistent even if backend logout call fails.
     }
+    clearStoredToken();
     setUser(null);
   }, []);
 
