@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from .database import engine, SessionLocal
 from . import models
 from .routers import  auth as auth_router
+from .routers import candidates as candidates_router
 from .seed import seed
 
 load_dotenv()
@@ -20,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router.router)
+app.include_router(candidates_router.router)
 
 @app.on_event("startup")
 def on_startup():

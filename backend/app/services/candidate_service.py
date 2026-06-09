@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from .constants import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
+from ..constants import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from .. import models, schemas
 
 
