@@ -7,10 +7,7 @@ from . import models
 from datetime import datetime, timezone, timedelta
 from .database import get_db
 import os
-
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-fallback-key-change-in-prod")
-ALGORITHM  = os.getenv("ALGORITHM", "HS256")
-EXPIRE_MIN = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
+from .constants import SECRET_KEY, ALGORITHM, EXPIRE_MIN
 
 pwd_context   = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -69,12 +66,3 @@ def require_permission(resource: str, action: str):
 
 
 
-can_list_candidates   = Depends(require_permission("candidates", "list"))
-can_read_candidate    = Depends(require_permission("candidates", "read"))
-can_create_score      = Depends(require_permission("scores",     "create"))
-can_read_all_scores   = Depends(require_permission("scores",     "read_all"))
-can_read_own_scores   = Depends(require_permission("scores",     "read_own"))
-can_read_notes        = Depends(require_permission("candidates", "read_internal_notes"))
-can_write_notes       = Depends(require_permission("candidates", "write_internal_notes"))
-can_trigger_summary   = Depends(require_permission("summary",    "trigger"))
-can_soft_delete       = Depends(require_permission("candidates", "soft_delete"))
