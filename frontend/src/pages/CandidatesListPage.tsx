@@ -16,6 +16,7 @@ interface ErrorPayload {
 }
 
 function CandidatesListPage() {
+  const SEARCH_DEBOUNCE_MS = 400;
   const [items, setItems] = useState<CandidateOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,11 +29,22 @@ function CandidatesListPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [total, setTotal] = useState(0);
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(total / pageSize)),
     [total, pageSize],
   );
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedKeyword(filters.keyword);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [filters.keyword, SEARCH_DEBOUNCE_MS]);
 
   useEffect(() => {
     let active = true;
@@ -45,7 +57,7 @@ function CandidatesListPage() {
         const params = {
           page,
           page_size: pageSize,
-          ...(filters.keyword ? { keyword: filters.keyword } : {}),
+          ...(debouncedKeyword ? { keyword: debouncedKeyword } : {}),
           ...(filters.status ? { status: filters.status } : {}),
           ...(filters.role_applied
             ? { role_applied: filters.role_applied }
@@ -78,7 +90,14 @@ function CandidatesListPage() {
     return () => {
       active = false;
     };
-  }, [filters, page, pageSize]);
+  }, [
+    debouncedKeyword,
+    filters.status,
+    filters.role_applied,
+    filters.skill,
+    page,
+    pageSize,
+  ]);
 
   const handleFilterChange = (field: keyof CandidateFilters, value: string) => {
     setPage(1);
