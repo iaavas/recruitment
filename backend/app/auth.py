@@ -1,23 +1,25 @@
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+import jwt
+from jwt import InvalidTokenError
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from . import models
 from datetime import datetime, timezone, timedelta
 from .database import get_db
-import os
 from .constants import SECRET_KEY, ALGORITHM, EXPIRE_MIN
 
-pwd_context   = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    return bcrypt.hashpw(plain.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except (ValueError, TypeError):
+        return False
 
 def create_token(user: models.User) -> str:
     
@@ -41,7 +43,7 @@ def get_current_user(
         user_id = payload.get("sub")
         if not user_id:
             raise exc
-    except JWTError:
+    except InvalidTokenError:
         raise exc
 
     user = (
