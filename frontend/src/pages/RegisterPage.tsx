@@ -7,8 +7,6 @@ interface ErrorPayload {
   detail?: string;
 }
 
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]{8,}$/;
-
 function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -25,12 +23,7 @@ function RegisterPage() {
     event.preventDefault();
     setError("");
 
-    if (!PASSWORD_REGEX.test(password)) {
-      setError(
-        "Password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one digit, and one special character."
-      );
-      return;
-    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;

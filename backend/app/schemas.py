@@ -3,25 +3,9 @@ from typing import Optional, List
 from datetime import datetime
 import re
 
-PASSWORD_PATTERN = re.compile(
-    r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?`~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?`~]{8,}$"
-)
-
-PASSWORD_REQUIREMENTS = (
-    "Password must be at least 8 characters and include at least one "
-    "uppercase letter, one lowercase letter, one digit, and one special character."
-)
-
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-
-    @field_validator("password")
-    @classmethod
-    def validate_password_strength(cls, v: str) -> str:
-        if not PASSWORD_PATTERN.match(v):
-            raise ValueError(PASSWORD_REQUIREMENTS)
-        return v
 
 
 class UserOut(BaseModel):
