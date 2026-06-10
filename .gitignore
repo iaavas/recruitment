@@ -12,7 +12,7 @@
 backend/.venv/
 backend/__pycache__/
 backend/.pytest_cache/
-backend/techkraft.db
+*.db
 __pycache__/
 
 

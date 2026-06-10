@@ -133,7 +133,7 @@ erDiagram
 Copy the example environment file and fill in required values:
 
 ```bash
-cp backend/.env.example backend/.env
+cp .env.example backend/.env
 ```
 
 Create and activate a virtual environment, install dependencies, and start the Uvicorn dev server:
@@ -237,31 +237,16 @@ docker-compose up --build
 
 The following pattern is a critical performance bug at scale:
 
-```python
-# ❌ ANTI-PATTERN — never do this
-def search_candidates(status: str, keyword: str, page: int, page_size: int):
-    # Loads the ENTIRE table into Python memory on every request
-    all_candidates = db.execute("SELECT * FROM candidates").fetchall()
-
-    # Filtering in Python — CPU-bound, ignores DB indexes
-    filtered = [c for c in all_candidates if c["status"] == status]
-
-    # Pagination over an already-fully-loaded list — O(n) on every page request
-    offset = (page - 1) * page_size
-    return filtered[offset : offset + page_size]
-```
-
 **Why this fails at scale:**
 
 1. **Memory exhaustion (OOM):** Fetching every row into Python heap on each paginated request will crash the process once the candidate table grows to hundreds of thousands of records.
 2. **CPU contention:** Deserialising large result sets into Python dicts is CPU-bound and will block the async event loop, degrading latency for all concurrent requests.
 3. **Pagination is effectively O(n):** The slice `filtered[offset:offset+page_size]` runs after the entire table is loaded and filtered — page 500 is just as expensive to compute as page 1, but wastes even more work.
-4. **No index utilisation:** The `status`, `name`, `email`, and `role_applied` columns are indexed in the schema; bypassing SQL filtering throws away those indexes entirely.
 
 ### The Correct Approach — Push Filtering and Pagination to the Database
 
 ```python
-# ✅ CORRECT — database handles filtering, searching, and pagination
+# CORRECT — database handles filtering, searching, and pagination
 def search_candidates(
     db: Session,
     status: str,
@@ -328,7 +313,7 @@ def search_candidates(
 | Concurrency | SQLite serialises writes | Migrate to PostgreSQL for multi-reviewer production workloads |
 | Background tasks | AI summaries are synchronous | Introduce Celery or ARQ with a Redis broker |
 | Schema sync | Frontend validation duplicates backend schemas | Generate TypeScript types from the OpenAPI spec |
-| Testing | No automated test suite | Add Pytest for backend unit/integration tests; Playwright for E2E dashboard testing |
+| Testing | Automated pytest suite implemented in backend/tests | Add Playwright for E2E dashboard testing |
 | Soft-delete safety | `deleted_at IS NULL` must be applied manually | Enforce via a SQLAlchemy base query filter or database view |
 
 ---
@@ -337,7 +322,7 @@ def search_candidates(
 
 ### 1. Register a Reviewer
 
-Password must satisfy the configured strength policy (minimum 8 characters, mixed case, digit, special character).
+A standard user registration endpoint.
 
 ```bash
 curl -X POST http://localhost:8000/auth/register \
@@ -351,7 +336,7 @@ curl -X POST http://localhost:8000/auth/register \
 ### 2. Authenticate and Retrieve a Bearer Token
 
 ```bash
-curl -X POST http://localhost:8000/auth/token \
+curl -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=reviewer@company.com&password=SecurePassword123!"
 ```
@@ -394,3 +379,9 @@ curl -X POST "http://localhost:8000/candidates/<CANDIDATE_ID>/scores" \
     "note": "Exceeded expectations in Python API design principles."
   }'
 ```
+
+---
+
+## Learning Reflection
+
+This project was a great opportunity to implement stateless, claim-embedded role-based access control (RBAC) in FastAPI and map it directly to frontend visibility handlers without relying on heavy external libraries. Given more time, we would explore integrating Alembic for formal SQL schema migrations and set up Redis to support token revocation lists and async Celery background tasks for the simulated AI LLM summary endpoint, ensuring the API is fully ready to scale.
